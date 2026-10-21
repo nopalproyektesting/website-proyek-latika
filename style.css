@@ -3,6 +3,10 @@
 *{box-sizing:border-box;margin:0}
 body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink);background:#eef2ff;min-height:100vh;overflow-x:hidden}
 a{color:inherit}
+/* Sembunyikan scrollbar di area dalam (chip, galeri, preview, textarea) agar bersih */
+.chips,.gal,.prevs,textarea{scrollbar-width:none;-ms-overflow-style:none}
+.chips::-webkit-scrollbar,.gal::-webkit-scrollbar,.prevs::-webkit-scrollbar,textarea::-webkit-scrollbar{display:none}
+textarea.in{resize:none;min-height:90px}
 /* Blob bergerak pelan */
 .blob{position:fixed;border-radius:50%;filter:blur(60px);opacity:.5;z-index:-1;animation:float 18s ease-in-out infinite alternate}
 .b1{width:300px;height:300px;background:var(--blue);top:-80px;left:-80px}
@@ -11,7 +15,7 @@ a{color:inherit}
 #app{max-width:480px;margin:0 auto;padding:12px 14px 100px}
 /* Glassmorphism */
 .glass{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.7);box-shadow:0 8px 30px rgba(2,52,173,.12);border-radius:var(--r)}
-.top{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:14px}
+.top{position:sticky;top:12px;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:14px}
 .logo{display:flex;gap:8px;align-items:center;font-weight:800;font-size:1.2rem;color:var(--blue);text-decoration:none}
 h1{font-size:1.35rem;color:var(--blue);font-weight:800}
 h2{font-size:1.1rem;color:var(--blue);margin:22px 0 10px;font-weight:800}
@@ -37,6 +41,7 @@ svg.lucide{width:20px;height:20px}
 .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .cat{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:84px;justify-content:center;border:0;color:var(--blue);font:700 .72rem inherit;font-family:inherit;cursor:pointer;transition:.3s}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sellers{display:grid}
 .card{position:relative;display:block;overflow:hidden;text-decoration:none;color:inherit;transition:.3s ease}
 .pimg{width:100%;aspect-ratio:1;object-fit:cover;display:block}
 .ph{display:grid;place-items:center;background:linear-gradient(135deg,var(--blue),#6f8cff);color:#fff}
@@ -53,6 +58,7 @@ svg.lucide{width:20px;height:20px}
 .c{text-align:center;display:grid;justify-items:center;gap:6px}
 .seller{display:flex;gap:12px;align-items:center}
 .av{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none}.av.big{width:90px;height:90px}
+.dwrap{display:grid}
 .gal{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;overflow-y:hidden}
 .gal>*{flex:0 0 100%;scroll-snap-align:center}
 .gimg{aspect-ratio:1;object-fit:cover;width:100%}
@@ -90,4 +96,57 @@ footer{margin-top:24px;padding:18px;text-align:center;background:var(--blue-dark
 /* Animasi muncul saat scroll */
 .rv{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
 .rv.in{opacity:1;transform:none}
+
+/* ===================================================================
+   LAYOUT DESKTOP (lebar layar >= 960px)
+   Di bawah 960px tampilan tetap layout HP (terpusat, max 480px).
+   =================================================================== */
+@media (min-width:960px){
+  #app{max-width:1120px;padding:12px 24px 56px}
+  h1{font-size:1.7rem}
+  h2{font-size:1.4rem;margin:36px 0 16px}
+  h3{font-size:1rem}
+  .top{min-height:62px;padding:8px 20px}
+  .top .ic{display:none} /* Pesanan sudah ada di menu atas */
+
+  /* Bottom nav berubah jadi menu di bar atas (sejajar header) */
+  .bottom{top:12px;bottom:auto;left:0;right:0;transform:none;margin:0 auto;width:min(1120px,100%);height:62px;padding:0 44px;justify-content:flex-end;align-items:center;gap:6px;background:none;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;border-radius:0;pointer-events:none}
+  .bottom a{flex-direction:row;gap:8px;min-width:0;min-height:46px;padding:0 18px;font-size:.9rem;pointer-events:auto}
+  .bottom a:hover{background:var(--blue-tint)}
+  .bottom a.on:hover{background:var(--blue)}
+
+  /* Hero */
+  .hero{position:relative;overflow:hidden;padding:56px 60px;min-height:300px}
+  .hero>*{position:relative;z-index:1}
+  .hero::after{content:"";position:absolute;right:-60px;top:-60px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,var(--yellow) 0,rgba(249,226,8,0) 70%);opacity:.45}
+  .hero h1{font-size:2.8rem;line-height:1.15;max-width:560px}
+  .hero p{max-width:480px;font-size:1.05rem}
+
+  .search{max-width:560px}
+  .chips{flex-wrap:wrap;overflow:visible}
+  .cats{gap:16px}
+  .cat{min-height:110px;font-size:.9rem}
+  .cat svg{width:28px;height:28px}
+  .cat:hover,.chip:hover{transform:translateY(-3px)}
+
+  .grid{grid-template-columns:repeat(4,1fr);gap:20px}
+  .card:hover{transform:translateY(-4px)}
+  .pb{padding:12px 14px 16px}
+
+  .sellers{grid-template-columns:repeat(3,1fr);gap:16px}
+  .sellers .box{margin:0}
+  .promise{gap:16px;font-size:.95rem}
+  .promise div{padding:26px 10px}
+  footer{padding:28px;font-size:1rem}
+
+  /* Detail produk: galeri kiri, info kanan */
+  .dwrap{grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+  .gal{flex-wrap:wrap;overflow:hidden;scroll-snap-type:none}
+  .gal>*:nth-child(n+2){flex:0 0 50%}
+  .dr .box:first-child{margin-top:0}
+
+  /* Batasi lebar halaman form/daftar agar tidak terlalu melebar */
+  #view[data-p=pesanan],#view[data-p=dashboard]{max-width:760px;margin:0 auto}
+  #view[data-p=login],#view[data-p=daftar],#view[data-p=pesan],#view[data-p=rating],#view[data-p=produk-baru]{max-width:580px;margin:0 auto}
+}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.blob{animation:none}*{transition:none!important}}

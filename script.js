@@ -1,12 +1,4 @@
 'use strict';
-/* =====================================================================
-   KOTAK KELAS - script.js
-   AKUN DEMO (3 penjual, semua password: demo123)
-   - 081234567890  (Dapur Kelas XI)
-   - 081234567891  (Warung Boga RPL)
-   - 081234567892  (Kedai Manis TKJ)
-   ===================================================================== */
-
 // ---------- Utilitas ----------
 const $ = (s, r = document) => r.querySelector(s);
 // Escape input pengguna agar tidak jadi XSS
@@ -118,6 +110,7 @@ function listP() {
   const a = Storage.getAll('kk_products').filter(p => { const s = sellerOf(p.sellerId) || {};
     return (!st.kat || p.kategori === st.kat) && (!q || [p.nama, s.toko, s.nama].some(x => String(x || '').toLowerCase().includes(q))); })
     .sort((x, y) => cnt(y.id) - cnt(x.id)); // terlaris = paling banyak dipesan
+  if (!Storage.getAll('kk_products').length) return '<p class="empty">Belum ada produk. Jadilah penjual pertama lewat menu Jual.</p>';
   return a.length ? a.map(cardP).join('') : '<p class="empty">Produk tidak ditemukan.</p>';
 }
 const chips = () => [['', 'Semua'], ...CATS].map(([v, l]) => `<button class="chip ${st.kat === v ? 'on' : ''}" data-c="kat" data-v="${v}">${l}</button>`).join('');
@@ -131,7 +124,7 @@ function vHome() {
   ${fbar()}
   <h2>Kategori</h2><div class="cats">${CATS.map(([c, i]) => `<button class="cat glass" data-c="kat" data-v="${c}"><i data-lucide="${i}"></i>${c}</button>`).join('')}</div>
   <h2>Produk Terlaris</h2><div class="grid" id="list">${listP()}</div>
-  <h2>Penjual Terbaik</h2>${top.map(({ s }) => `<a class="glass box seller rv" href="#/penjual/${s.id}" style="text-decoration:none">${img(s.foto, s.toko, 'av')}<div><h3>${esc(s.toko)}</h3><small>${esc(s.nama)} · ${esc(s.kelas)}</small>${star(s.id)}</div></a>`).join('')}
+  <h2>Penjual Terbaik</h2><div class="sellers">${top.map(({ s }) => `<a class="glass box seller rv" href="#/penjual/${s.id}" style="text-decoration:none">${img(s.foto, s.toko, 'av')}<div><h3>${esc(s.toko)}</h3><small>${esc(s.nama)} · ${esc(s.kelas)}</small>${star(s.id)}</div></a>`).join('') || '<p class="empty">Belum ada penjual terdaftar.</p>'}</div>
   <h2>Janji Kami</h2><div class="promise"><div class="glass rv"><i data-lucide="shield-check"></i>Dibuat siswa sendiri</div><div class="glass rv"><i data-lucide="clock"></i>Ready atau PO jelas</div><div class="glass rv"><i data-lucide="heart-handshake"></i>Rating jujur</div></div>
   <footer>Kotak Kelas - Karya siswa, untuk siswa.</footer>`;
 }
@@ -140,12 +133,12 @@ const vProduk = () => `<h1>Semua Produk</h1>${fbar()}<div class="grid" id="list"
 function vDetail(id) {
   const p = Storage.getById('kk_products', id); if (!p) return nf();
   const s = sellerOf(p.sellerId) || {};
-  return `${back('#/produk')}<div class="gal glass">${(p.fotos.length ? p.fotos : ['']).map(f => img(f, p.nama, 'gimg')).join('')}</div>
-  <div class="glass box rv"><span class="badge ${p.status}">${p.status === 'ready' ? 'READY' : 'PRE-ORDER'}</span><h1>${esc(p.nama)}</h1><b class="price">${rp(p.harga)}</b><p>${esc(p.deskripsi)}</p>
+  return `${back('#/produk')}<div class="dwrap"><div class="dl"><div class="gal glass">${(p.fotos.length ? p.fotos : ['']).map(f => img(f, p.nama, 'gimg')).join('')}</div></div>
+  <div class="dr"><div class="glass box rv"><span class="badge ${p.status}">${p.status === 'ready' ? 'READY' : 'PRE-ORDER'}</span><h1>${esc(p.nama)}</h1><b class="price">${rp(p.harga)}</b><p>${esc(p.deskripsi)}</p>
   <p class="info"><i data-lucide="${p.status === 'ready' ? 'package' : 'clock'}"></i>${p.status === 'ready' ? 'Stok: ' + p.stok : 'Estimasi siap: ' + esc(p.estimasiPO)}</p>
   <a class="btn y" href="#/pesan/${p.id}">${p.status === 'ready' ? 'Beli Sekarang' : 'Pre-Order'}</a></div>
   <div class="glass box seller rv">${img(s.foto, s.toko, 'av')}<div><h3>${esc(s.toko)}</h3><small>${esc(s.nama)} · ${esc(s.kelas)}</small>${star(s.id)}</div></div>
-  <div class="row"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/${toWA(s.wa)}"><i data-lucide="message-circle"></i>WhatsApp</a><a class="btn o" href="#/penjual/${s.id}">Profil penjual</a></div>`;
+  <div class="row"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/${toWA(s.wa)}"><i data-lucide="message-circle"></i>WhatsApp</a><a class="btn o" href="#/penjual/${s.id}">Profil penjual</a></div></div></div>`;
 }
 
 function vSeller(id) {
@@ -318,9 +311,10 @@ function route() {
   if (['dashboard', 'produk-baru'].includes(a) && !me()) { location.hash = '#/login'; return; } // wajib login
   const V = { '': vHome, produk: () => b ? vDetail(b) : vProduk(), penjual: () => vSeller(b), pesan: () => vPesan(b), pesanan: vPesanan, rating: () => vRating(b), login: vLogin, daftar: vDaftar, dashboard: vDash, 'produk-baru': vNew };
   $('#view').innerHTML = (V[a] || nf)();
+  $('#view').dataset.p = a || 'home'; // dipakai CSS desktop untuk membatasi lebar halaman
   const k = { '': 0, produk: 1, penjual: 1, pesan: 1, pesanan: 2, rating: 2 }[a] ?? 3;
   [...$('#nav').children].forEach((x, i) => x.classList.toggle('on', i === k));
   window.scrollTo(0, 0); lucide.createIcons(); reveal();
 }
 window.addEventListener('hashchange', route);
-seed().then(route);
+route();
