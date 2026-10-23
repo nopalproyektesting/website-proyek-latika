@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Kotak Kelas</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -11,19 +11,30 @@
 <body>
   <!-- Blob organik di background -->
   <div class="blob b1"></div><div class="blob b2"></div>
-  <div id="app">
-    <header class="top glass">
+
+  <!-- Navbar atas: selalu selebar layar. Menu teks tampil hanya di desktop -->
+  <header class="top" id="top">
+    <div class="top-in">
       <a class="logo" href="#/"><i data-lucide="package"></i>Kotak Kelas</a>
-      <a class="ic" href="#/pesanan" aria-label="Pesanan saya"><i data-lucide="shopping-bag"></i></a>
-    </header>
-    <main id="view"></main>
-  </div>
-  <nav class="bottom glass" id="nav" aria-label="Navigasi utama">
-    <a href="#/"><i data-lucide="house"></i>Beranda</a>
-    <a href="#/produk"><i data-lucide="layout-grid"></i>Produk</a>
-    <a href="#/pesanan"><i data-lucide="clipboard-list"></i>Pesanan</a>
-    <a href="#/dashboard"><i data-lucide="store"></i>Jual</a>
+      <nav class="dnav" aria-label="Menu utama">
+        <a href="#/" data-k="0"><i data-lucide="house"></i>Beranda</a>
+        <a href="#/produk" data-k="1"><i data-lucide="layout-grid"></i>Produk</a>
+        <a href="#/pesanan" data-k="2"><i data-lucide="clipboard-list"></i>Pesanan</a>
+        <a href="#/dashboard" data-k="3"><i data-lucide="store"></i>Jual</a>
+      </nav>
+    </div>
+  </header>
+
+  <div id="app"><main id="view"></main></div>
+
+  <!-- Navbar bawah: hanya tampil di HP -->
+  <nav class="bottom glass" aria-label="Navigasi utama">
+    <a href="#/" data-k="0"><i data-lucide="house"></i>Beranda</a>
+    <a href="#/produk" data-k="1"><i data-lucide="layout-grid"></i>Produk</a>
+    <a href="#/pesanan" data-k="2"><i data-lucide="clipboard-list"></i>Pesanan</a>
+    <a href="#/dashboard" data-k="3"><i data-lucide="store"></i>Jual</a>
   </nav>
+
   <div id="toast" role="status"></div>
   <script src="script.js"></script>
 </body>
